@@ -59,7 +59,7 @@ initializeDb( db => {
       const { filename } = req.body;
       const s3Params = {
         Bucket: S3_BUCKET,
-        Key: filename
+        Key: `Files/${filename}`
       };
 
       s3.deleteObject(s3Params, (err) => {

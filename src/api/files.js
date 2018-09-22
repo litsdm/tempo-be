@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
 
 import User from '../models/user';
 import File from '../models/file';
@@ -26,6 +25,16 @@ router.get('/:userId/files', ({ params: { userId } }, res) => {
     if (err) return res.status(401).send({ message: 'An error ocurred.' });
     res.send({ files });
   })
+});
+
+router.delete('/:userId/files/:fileId', ({ params: { userId, fileId } }, res) => {
+  User.findByIdAndUpdate(userId, { $pull: { files: fileId } }, (err) => {
+    if (err) return res.status(401).send({ message: 'An error ocurred.' });
+    File.findOneAndDelete({ _id: fileId }, (err) => {
+      if (err) console.log(err);
+      res.status(200);
+    });
+  });
 });
 
 export default router;
