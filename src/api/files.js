@@ -10,7 +10,6 @@ router.post('/:userId/files', ({ body, params: { userId } }, res) => {
   const file = new File(body);
   file.save(() => {
     User.findById(userId).exec((err, user) => {
-      console.log(err);
       if (err) return res.status(401).send({ message: 'An error ocurred.' });
       user.files.push(file);
       user.save();
@@ -22,7 +21,7 @@ router.post('/:userId/files', ({ body, params: { userId } }, res) => {
 router.get('/:userId/files', ({ params: { userId } }, res) => {
   User.findById(userId)
   .select('files')
-  .populate('files')
+  .populate({ path: 'files', options: { sort: { createdAt: -1 } } })
   .exec((err, { files }) => {
     if (err) return res.status(401).send({ message: 'An error ocurred.' });
     res.send({ files });

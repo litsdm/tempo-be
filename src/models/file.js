@@ -12,4 +12,11 @@ var FileSchema = new Schema({
   senderDevice: { type: String }
 });
 
+FileSchema.pre('save', function(next) {
+  const now = new Date();
+  this.updatedAt = now;
+  if (!this.createdAt) this.createdAt = now;
+  next();
+});
+
 export default mongoose.model('File', FileSchema);
