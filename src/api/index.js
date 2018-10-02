@@ -3,7 +3,7 @@ import { Router } from 'express';
 import auth from './auth';
 import files from './files';
 
-export default ({ config, db }) => {
+export default () => {
 	let api = Router();
 
 	api.use('/', auth);
