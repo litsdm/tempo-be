@@ -1,9 +1,10 @@
-import http from 'http';
+import http, { Server } from 'http';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import aws from 'aws-sdk';
+import socketIo from 'socket.io';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
@@ -12,6 +13,9 @@ import config from './config.json';
 const { S3_BUCKET } = process.env;
 
 let app = express();
+const httpServer = Server(app);
+const io = socketIo(httpServer);
+
 app.server = http.createServer(app);
 
 // logger
@@ -25,6 +29,25 @@ app.use(cors({
 app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
+
+io.on('connection', (socket) => {
+	console.log('a user connected');
+	socket.on('userConnection', function(userId) {
+		socket.join(userId)
+	});
+	
+	socket.on('sendFile', function({ userId, file }) {
+		io.to(userId).emit('recieveFile', file);
+	});
+	
+	socket.on('logout', function() {
+		socket.disconnect();
+	});
+	
+	socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+})
 
 // connect to db
 initializeDb( db => {
@@ -77,8 +100,8 @@ initializeDb( db => {
 	app.get('/api/sign-s3', signS3);
   app.post('/api/delete-s3', deleteS3);
 
-	app.server.listen(process.env.PORT || config.port, () => {
-		console.log(`Started on port ${app.server.address().port}`);
+	httpServer.listen(process.env.PORT || config.port, () => {
+		console.log(`Started on port ${httpServer.address().port}`);
 	});
 });
 
