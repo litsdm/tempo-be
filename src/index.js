@@ -30,25 +30,6 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
-io.on('connection', (socket) => {
-	console.log('a user connected');
-	socket.on('userConnection', function(userId) {
-		socket.join(userId)
-	});
-	
-	socket.on('sendFile', function({ userId, file }) {
-		io.to(userId).emit('recieveFile', file);
-	});
-	
-	socket.on('logout', function() {
-		socket.disconnect();
-	});
-	
-	socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-})
-
 // connect to db
 initializeDb( db => {
 
@@ -103,6 +84,25 @@ initializeDb( db => {
 	httpServer.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${httpServer.address().port}`);
 	});
+
+	io.on('connection', (socket) => {
+		console.log('a user connected');
+		socket.on('userConnection', function(userId) {
+			socket.join(userId)
+		});
+
+		socket.on('sendFile', function({ userId, file }) {
+			io.to(userId).emit('recieveFile', file);
+		});
+
+		socket.on('logout', function() {
+			socket.disconnect();
+		});
+
+		socket.on('disconnect', function(){
+			console.log('user disconnected');
+		});
+	})
 });
 
 export default app;
