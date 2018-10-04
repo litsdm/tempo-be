@@ -81,7 +81,7 @@ initializeDb( db => {
 		User.findByIdAndUpdate(userId, { $set: { lastConnection: new Date() } }, (err) => { if (err) console.log(err); });
 	}
 
-	cron.schedule('0 0 0 /3 * *', () => {
+	cron.schedule('0 0 0 */3 * *', () => {
 		User
 		.find()
 		.select('_id lastConnection files')
