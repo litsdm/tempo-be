@@ -6,6 +6,7 @@ const { ObjectId } = Schema.Types;
 var UserSchema = new Schema({
   createdAt: { type: Date },
   updatedAt: { type: Date },
+  lastConnection: { type: Date },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   username: { type: String, required: true },
@@ -15,6 +16,7 @@ var UserSchema = new Schema({
 UserSchema.pre('save', function(next) {
   const now = new Date();
   this.updatedAt = now;
+  if (!this.lastConnection) this.lastConnection = now;
   if (!this.createdAt) this.createdAt = now;
 
   // ENCRYPT PASSWORD
