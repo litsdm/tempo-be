@@ -87,15 +87,19 @@ initializeDb( db => {
 
 	io.on('connection', (socket) => {
 		console.log('a user connected');
-		socket.on('userConnection', function(userId) {
-			socket.join(userId)
+		socket.on('userConnection', userId => {
+			socket.join(userId);
 		});
 
-		socket.on('sendFile', function({ userId, file }) {
-			io.to(userId).emit('recieveFile', file);
+		socket.on('sendFile', ({ roomId, file }) => {
+			socket.to(roomId).emit('recieveFile', file);
 		});
 
-		socket.on('logout', function() {
+		socket.on('removeFileFromRoom', ({ roomId, index }) => {
+			socket.to(roomId).emit('removeFile', index);
+		})
+
+		socket.on('logout', () => {
 			socket.disconnect();
 		});
 
