@@ -21,7 +21,7 @@ router.post('/sign-up', ({ body }, res) => {
   const user = new User(body);
   user.save((err) => {
     if (err) { return res.status(400).send({ message: err }) }
-    const { _id, username, email } = body;
+    const { _id, username, email } = user;
     const token = jwt.sign({ id: _id, username, email }, process.env.JWT_SECRET);
     res.send({ token });
   })
