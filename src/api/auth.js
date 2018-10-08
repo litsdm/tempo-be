@@ -18,13 +18,18 @@ router.post('/login', ({ body: { email, password } }, res) => {
 });
 
 router.post('/sign-up', ({ body }, res) => {
-  const user = new User(body);
-  user.save((err) => {
-    if (err) { return res.status(400).send({ message: err }) }
-    const { _id, username, email } = user;
-    const token = jwt.sign({ id: _id, username, email }, process.env.JWT_SECRET);
-    res.send({ token });
-  })
+  User.findOne({ email: body.email }, (err, user) => {
+    const newUser = new User(body);
+
+    if (user) return res.status(401).send({ message: 'Email already in use.' });
+
+    newUser.save((err) => {
+      if (err) { return res.status(400).send({ message: err }) }
+      const { _id, username, email } = newUser;
+      const token = jwt.sign({ id: _id, username, email }, process.env.JWT_SECRET);
+      res.send({ token });
+    });
+  });
 });
 
 export default router;
