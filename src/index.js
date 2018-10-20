@@ -7,6 +7,7 @@ import aws from 'aws-sdk';
 import socketIo from 'socket.io';
 import moment from 'moment';
 import cron from 'node-cron';
+import Expo from 'expo-server-sdk';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
@@ -20,6 +21,8 @@ const { S3_BUCKET } = process.env;
 let app = express();
 const httpServer = Server(app);
 const io = socketIo(httpServer);
+
+const expo = new Expo();
 
 app.server = http.createServer(app);
 
@@ -107,7 +110,25 @@ initializeDb( db => {
 				}
 			});
 		});
-	})
+	});
+
+	const sendFileReceivedPushNotification = (userId, filename) => {
+		let messages = [];
+		let chunks;
+		User.findOne({ _id: userId }, 'expoToken', (err, { expoToken }) => {
+			if (err || !Expo.isExpoPushToken(expoToken)) return;
+			messages.push({
+				to: expoToken,
+				sound: 'default',
+				body: `New file received ${filename}`,
+			});
+
+			chunks = expo.chunkPushNotifications(messages);
+			for (let chunk of chunks) {
+				expo.sendPushNotificationsAsync(chunk);
+			}
+		});
+	}
 
 	// internal middleware
 	app.use(middleware({ config, db }));
@@ -130,6 +151,7 @@ initializeDb( db => {
 
 		socket.on('sendFile', ({ roomId, file }) => {
 			socket.to(roomId).emit('recieveFile', file);
+			sendFileReceivedPushNotification(roomId, file.name);
 		});
 
 		socket.on('removeFileFromRoom', ({ roomId, index }) => {

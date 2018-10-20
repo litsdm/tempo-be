@@ -10,7 +10,8 @@ var FileSchema = new Schema({
   s3Url: { type: String, required: true },
   size: { type: Number, required: true },
   sender: { type:  ObjectId, ref: 'User' },
-  senderDevice: { type: String }
+  senderDevice: { type: String },
+  type: { type: String }
 });
 
 FileSchema.pre('save', function(next) {
