@@ -9,7 +9,8 @@ var FileSchema = new Schema({
   name: { type: String, required: true },
   s3Url: { type: String, required: true },
   size: { type: Number, required: true },
-  sender: { type:  ObjectId, ref: 'User' },
+  from: { type:  ObjectId, ref: 'User' },
+  to: [{ type: ObjectId, ref: 'User' }],
   senderDevice: { type: String },
   type: { type: String }
 });
