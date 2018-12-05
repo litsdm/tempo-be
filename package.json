@@ -59,5 +59,10 @@
   "bugs": {
     "url": "https://github.com/developit/express-es6-rest-api/issues"
   },
-  "homepage": "https://github.com/developit/express-es6-rest-api#readme"
+  "homepage": "https://github.com/developit/express-es6-rest-api#readme",
+  "devEngines": {
+    "node": ">=7.x",
+    "npm": ">=4.x",
+    "yarn": ">=0.21.3"
+  }
 }
