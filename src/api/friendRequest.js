@@ -20,11 +20,13 @@ router.post('/friendRequest', ({ body: { tag, from } }, res) => {
 });
 
 router.get('/friendRequest/:user_id', ({ params: { user_id } }, res) => {
-  FriendRequest.find({ to: user_id }, (err, friendRequests) => {
-    if (err) return res.status(400).send({ message: err.message });
+  FriendRequest.find({ to: user_id })
+    .populate('from', '_id username placeholderColor')
+    .exec((err, friendRequests) => {
+      if (err) return res.status(400).send({ message: err.message });
 
-    res.status(200).send({ friendRequests });
-  })
+      res.status(200).send({ friendRequests });
+    });
 });
 
 router.delete('/friendRequest/:request_id/accept', ({ params: { request_id } }, res) => {
