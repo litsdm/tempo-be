@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 
 const { ObjectId } = Schema.Types;
 
+const COLORS = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#FFC107', '#FF9800', '#FF5722', '#607D8B'];
+
 var UserSchema = new Schema({
   createdAt: { type: Date },
   updatedAt: { type: Date },
@@ -10,9 +12,10 @@ var UserSchema = new Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   username: { type: String, required: true },
-  placeholderColor: { type: String },
+  placeholderColor: { type: String, default: COLORS[Math.floor(Math.random()*COLORS.length)] },
   files: [{ type: ObjectId, ref: 'File' }],
   friends: [{ type: ObjectId, ref: 'User' }],
+  profilePic: { type: String, default: '' },
   tag: { type: String },
   discriminator: { type: String },
   expoToken: { type: String }

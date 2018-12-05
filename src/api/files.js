@@ -9,8 +9,7 @@ router.post('/files', ({ body }, res) => {
   const file = new File(body);
   file.save(() => {
     User.updateMany({ _id: { $in: file.to } }, { $push: { files: file._id } })
-      .exec((err, users) => {
-        console.log(err, users);
+      .exec((err) => {
         if (err) return res.status(401).send({ message: err.message });
         res.status(200).send({ file });
       });
