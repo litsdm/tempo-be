@@ -1,6 +1,6 @@
 {
   "name": "tempo-be",
-  "version": "1.12.3",
+  "version": "1.10.1",
   "description": "Starter project for an ES6 RESTful Express API",
   "main": "dist",
   "scripts": {
