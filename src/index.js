@@ -154,6 +154,11 @@ initializeDb( db => {
 			sendFileReceivedPushNotification(roomId, file.name);
 		});
 
+		socket.on('sendRequest', ({ roomId, friendRequest }) => {
+			socket.to(roomId).emit('receiveFriendRequest', friendRequest);
+			// sendFileReceivedPushNotification(roomId, file.name);
+		});
+
 		socket.on('removeFileFromRoom', ({ roomId, index }) => {
 			socket.to(roomId).emit('removeFile', index);
 		})
