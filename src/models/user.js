@@ -13,7 +13,6 @@ var UserSchema = new Schema({
   password: { type: String, required: true },
   username: { type: String, required: true },
   placeholderColor: { type: String, default: COLORS[Math.floor(Math.random()*COLORS.length)] },
-  files: [{ type: ObjectId, ref: 'File' }],
   friends: [{ type: ObjectId, ref: 'User' }],
   profilePic: { type: String, default: '' },
   tag: { type: String },

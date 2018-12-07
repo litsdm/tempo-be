@@ -1,18 +1,15 @@
 import { Router } from 'express';
 
-import User from '../models/user';
+// import User from '../models/user';
 import File from '../models/file';
 
 const router = Router();
 
 router.post('/files', ({ body }, res) => {
   const file = new File(body);
-  file.save(() => {
-    User.updateMany({ _id: { $in: file.to } }, { $push: { files: file._id } })
-      .exec((err) => {
-        if (err) return res.status(401).send({ message: err.message });
-        res.status(200).send({ file });
-      });
+  file.save((err) => {
+    if (err) return res.status(401).send({ message: err.message });
+    res.status(200).send({ file });
   });
 });
 
@@ -24,12 +21,17 @@ router.get('/:userId/files', ({ params: { userId } }, res) => {
 });
 
 router.delete('/:userId/files/:fileId', ({ params: { userId, fileId } }, res) => {
-  User.findOneAndUpdate({ _id: userId }, { $pull: { files: fileId } }, (err) => {
-    if (err) return res.status(401).send({ message: 'An error ocurred.' });
-    File.findOneAndDelete({ _id: fileId }, (err) => {
-      if (err) console.log(err);
-      res.status(200);
-    });
+  File.findOneAndUpdate({ to: userId }, { $pull: { to: userId } }, (err, fileBeforeUpdate) => {
+    if (err) return res.status(400).send({ message: err.message });
+
+    if (fileBeforeUpdate.to.length === 1) {
+      File.findOneAndDelete({ _id: fileId }, (error) => {
+        if (error) return res.status(400).send({ message: error.message });
+        res.status(200).send({ shouldDeleteS3: true });
+      });
+    } else {
+      res.send({ shouldDeleteS3: false });
+    }
   });
 });
 
