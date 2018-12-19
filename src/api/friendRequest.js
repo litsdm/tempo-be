@@ -31,6 +31,7 @@ router.get('/friendRequest/:user_id', ({ params: { user_id } }, res) => {
 
 router.delete('/friendRequest/:request_id/accept', ({ params: { request_id } }, res) => {
   FriendRequest.findById(request_id).exec((err, friendRequest) => {
+    if (!friendRequest) return res.status(404).send({ message: 'Friend Request not found.' })
     addFriendToUser(friendRequest.to, friendRequest.from, (err) => {
       if (err) return res.status(400).send({ message: err.message });
       addFriendToUser(friendRequest.from, friendRequest.to, (error) => {

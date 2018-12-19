@@ -23,6 +23,7 @@ router.get('/:userId/files', ({ params: { userId } }, res) => {
 router.delete('/:userId/files/:fileId', ({ params: { userId, fileId } }, res) => {
   File.findOneAndUpdate({ to: userId }, { $pull: { to: userId } }, (err, fileBeforeUpdate) => {
     if (err) return res.status(400).send({ message: err.message });
+    if (!fileBeforeUpdate) return res.send(200).send({ message: 'File has been deleted already.' });
 
     if (fileBeforeUpdate.to.length === 1) {
       File.findOneAndDelete({ _id: fileId }, (error) => {

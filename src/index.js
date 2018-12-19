@@ -54,7 +54,7 @@ initializeDb( db => {
 		};
 
 		s3.getSignedUrl('putObject', s3Params, (err, data) => {
-			if (err) return res.end();
+			if (err) { console.log(err); return res.end(); }
 
 			const returnData = {
 				signedRequest: data,
@@ -176,7 +176,7 @@ initializeDb( db => {
 			socket.disconnect();
 		});
 
-		socket.on('disconnect', function(){
+		socket.on('disconnect', () => {
 			console.log('user disconnected');
 		});
 	})
