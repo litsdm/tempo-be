@@ -4,6 +4,7 @@ import auth from './auth';
 import files from './files';
 import user from './user';
 import friendRequest from './friendRequest';
+import stripe from './stripe';
 
 export default () => {
 	let api = Router();
@@ -12,6 +13,7 @@ export default () => {
 	api.use('/', files);
 	api.use('/', user);
 	api.use('/', friendRequest);
+	api.use('/', stripe);
 
 	// perhaps expose some API metadata at the root
 	api.get('/', (req, res) => {

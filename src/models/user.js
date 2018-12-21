@@ -17,7 +17,9 @@ var UserSchema = new Schema({
   profilePic: { type: String, default: '' },
   tag: { type: String },
   discriminator: { type: String },
-  expoToken: { type: String }
+  expoToken: { type: String },
+  isPro: { type: Boolean, default: false },
+  remainingBytes: { type: Number, default: 10737418240 }
 });
 
 UserSchema.pre('save', function(next) {
