@@ -170,7 +170,11 @@ initializeDb( db => {
 
 		socket.on('removeFileFromRoom', ({ roomId, index }) => {
 			socket.to(roomId).emit('removeFile', index);
-		})
+		});
+
+		socket.on('updatedUser', ({ roomId, token }) => {
+			socket.to(roomId).emit('updateUser', token);
+		});
 
 		socket.on('logout', () => {
 			socket.disconnect();
