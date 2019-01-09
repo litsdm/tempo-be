@@ -3,8 +3,10 @@ import Stripe from 'stripe';
 
 import User from '../models/user';
 
+const { STRIPE_SECRET } = process.env;
+
 const router = Router();
-const stripe = Stripe('sk_test_b3ryWQAanOC9xV2rowYwmWVr');
+const stripe = Stripe(STRIPE_SECRET);
 
 let planId = '';
 
