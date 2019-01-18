@@ -8,6 +8,7 @@ import socketIo from 'socket.io';
 import moment from 'moment';
 import cron from 'node-cron';
 import Expo from 'expo-server-sdk';
+import uuid from 'uuid/v4';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
@@ -45,9 +46,11 @@ initializeDb( db => {
 		const fileName = req.query['file-name'];
 		const fileType = req.query['file-type'];
 		const folderName = req.query['folder-name'];
+		const randomIndex = Math.floor(Math.random() * (4 - 0 + 1));
+		const uniqueFilename = `${uuid().split('-')[randomIndex]}-${fileName}`
 		const s3Params = {
 			Bucket: S3_BUCKET,
-			Key: `${folderName}/${fileName}`,
+			Key: `${folderName}/${uniqueFilename}`,
 			Expires: 60,
 			ContentType: fileType,
 			ACL: 'public-read'
@@ -58,7 +61,7 @@ initializeDb( db => {
 
 			const returnData = {
 				signedRequest: data,
-				url: `https://${S3_BUCKET}.s3.amazonaws.com/${folderName}/${fileName}`
+				url: `https://${S3_BUCKET}.s3.amazonaws.com/${folderName}/${uniqueFilename}`
 			};
 			res.write(JSON.stringify(returnData));
 			res.end();
