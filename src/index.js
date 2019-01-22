@@ -115,6 +115,16 @@ initializeDb( db => {
 		});
 	});
 
+	cron.schedule('0 0 0 1 * *', () => {
+		User.updateMany({ isPro: false }, { $set: { remainingFiles: 50, remainingBytes: 2147483648 } }, (err, raw) => {
+			// TODO: Handle error
+		});
+
+		User.updateMany({ isPro: true }, { $set: { remainingFiles: 10000, remainingBytes: 53687091200 } }, (err, raw) => {
+			// TODO: Handle error
+		})
+	});
+
 	const sendFileReceivedPushNotification = (userId, filename) => {
 		let messages = [];
 		let chunks;

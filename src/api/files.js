@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 // import User from '../models/user';
 import File from '../models/file';
+import User from '../models/user';
 
 const router = Router();
 
@@ -17,6 +18,18 @@ router.get('/:userId/files', ({ params: { userId } }, res) => {
   File.find({ to: userId }, {}, { sort: { createdAt: -1 } }, (err, files) => {
     if (err) return res.status(401).send({ message: 'An error ocurred.' });
     res.send({ files });
+  });
+});
+
+router.get('/admin/:userId/files', ({ params: { userId } }, res) => {
+  User.findOne({ _id: userId }, 'role', (err, user) => {
+    if (!user || err || user.role !== 'admin') res.send({ hasAccess: false }).end();
+
+    File.find().exec((error, files) => {
+      if (error) res.send({ hasAccess: false }).end();
+
+      res.status(200).send({ files, hasAccess: true }).end();
+    });
   });
 });
 

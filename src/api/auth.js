@@ -11,8 +11,8 @@ router.post('/login', ({ body: { email, password } }, res) => {
     if (!user) return res.status(401).send({ message: 'There is no user with that email.' });
     user.comparePassword(password, (err, isMatch) => {
       if (!isMatch) return res.status(401).send({ message: 'Password is incorrect.' });
-      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes } = user;
-      const token = jwt.sign({ id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes }, process.env.JWT_SECRET);
+      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role } = user;
+      const token = jwt.sign({ id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role }, process.env.JWT_SECRET);
       res.send({ token });
     })
   });
@@ -27,8 +27,8 @@ router.post('/sign-up', ({ body }, res) => {
 
     newUser.save((error) => {
       if (error) { return res.status(400).send({ message: error.message }) }
-      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes } = newUser;
-      const token = jwt.sign({ id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes }, process.env.JWT_SECRET);
+      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role } = newUser;
+      const token = jwt.sign({ id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role }, process.env.JWT_SECRET);
       res.send({ token });
     });
   });

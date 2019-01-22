@@ -19,7 +19,9 @@ var UserSchema = new Schema({
   discriminator: { type: String },
   expoToken: { type: String },
   isPro: { type: Boolean, default: false },
-  remainingBytes: { type: Number, default: 10737418240 }
+  remainingBytes: { type: Number, default: 2147483648 },
+  remainingFiles: { type: Number, default: 50 },
+  role: { type: String, default: 'user' }
 });
 
 UserSchema.pre('save', function(next) {

@@ -11,9 +11,9 @@ router.put('/:userId/update', ({ body: { name, value }, params: { userId } }, re
     .populate('friends')
     .exec((err, user) => {
       if (err) return res.send({ message: 'Something went wrong while updating your user.' });
-      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes } = user;
-      const tokenObj = { id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes };
-      if (name === 'username' || name === 'email' || name === '_id', name === 'placeholderColor', name === 'discriminator', name === 'profilePic', name === 'isPro', name === 'remainingBytes') {
+      const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role } = user;
+      const tokenObj = { id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role };
+      if (tokenObj.hasOwnProperty(name) || name === '_id') {
         tokenObj[name] = value;
       }
       const token = jwt.sign(tokenObj, process.env.JWT_SECRET);
