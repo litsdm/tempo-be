@@ -25,7 +25,10 @@ router.get('/admin/:userId/files', ({ params: { userId } }, res) => {
   User.findOne({ _id: userId }, 'role', (err, user) => {
     if (!user || err || user.role !== 'admin') res.send({ hasAccess: false }).end();
 
-    File.find().exec((error, files) => {
+    File.find({}, {}, { sort: { createdAt: -1 } })
+    .populate('from', '_id username email placeholderColor profilePic tag')
+    .populate('to', '_id username email placeholderColor profilePic tag')
+    .exec((error, files) => {
       if (error) res.send({ hasAccess: false }).end();
 
       res.status(200).send({ files, hasAccess: true }).end();
