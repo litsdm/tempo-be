@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-// import User from '../models/user';
 import File from '../models/file';
 import User from '../models/user';
 
@@ -25,7 +24,7 @@ router.get('/admin/:userId/files', ({ params: { userId } }, res) => {
   User.findOne({ _id: userId }, 'role', (err, user) => {
     if (!user || err || user.role !== 'admin') res.send({ hasAccess: false }).end();
 
-    File.find({}, {}, { sort: { createdAt: -1 } })
+    File.find({ $or: [ { isGroup: false }, { isGroup: { $exists: false } } ] }, {}, { sort: { createdAt: -1 } })
     .populate('from', '_id username email placeholderColor profilePic tag')
     .populate('to', '_id username email placeholderColor profilePic tag')
     .exec((error, files) => {
