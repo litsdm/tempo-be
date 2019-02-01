@@ -7,7 +7,7 @@ var FileSchema = new Schema({
   expiresAt: { type: Date },
   updatedAt: { type: Date },
   name: { type: String, required: true },
-  s3Url: { type: String, required: true },
+  s3Url: { type: String },
   size: { type: Number, required: true },
   from: { type:  ObjectId, ref: 'User' },
   to: [{ type: ObjectId, ref: 'User' }],
