@@ -11,6 +11,10 @@ router.put('/:userId/update', ({ body: { name, value }, params: { userId } }, re
     .populate('friends')
     .exec((err, user) => {
       if (err) return res.send({ message: 'Something went wrong while updating your user.' });
+      if (name === 'remainingFiles' && value >= 20 && !user.isPro) {
+        value = 19;
+      }
+
       const { _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role } = user;
       const tokenObj = { id: _id, username, email, placeholderColor, discriminator, profilePic, isPro, remainingBytes, remainingFiles, role };
       if (tokenObj.hasOwnProperty(name) || name === '_id') {
