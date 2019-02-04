@@ -13,10 +13,13 @@ router.post('/links', ({ body }, res) => {
 });
 
 router.get('/links/:linkId', ({ params: { linkId } }, res) => {
-  Link.findOne({ _id: linkId }, (err, link) => {
-    if (err) return res.status(401).send({ message: 'An error ocurred.' });
-    res.send({ link });
-  });
+  Link
+    .findOne({ _id: linkId })
+    .populate('files', 'name type size')
+    .exec((err, link) => {
+      if (err) return res.status(401).send({ message: 'An error ocurred.' });
+      res.send({ link });
+    });
 });
 
 router.delete('/links/linkId', ({ params: { linkId } }, res) => {
