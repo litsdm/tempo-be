@@ -51,4 +51,12 @@ router.delete('/:userId/files/:fileId', ({ params: { userId, fileId } }, res) =>
   });
 });
 
+router.delete('/files', ({ body: { files } }, res) => {
+  File.deleteMany({ _id: { $in: files } }, err => {
+    if (err) return res.status(400).send({ message: err.message });
+
+    res.status(200).send();
+  })
+});
+
 export default router;
