@@ -15,7 +15,7 @@ router.post('/links', ({ body }, res) => {
 router.get('/links/:linkId', ({ params: { linkId } }, res) => {
   Link
     .findOne({ _id: linkId })
-    .populate('files', 'name type size')
+    .populate('files', 'name type size s3Url')
     .exec((err, link) => {
       if (err) return res.status(401).send({ message: 'An error ocurred.' });
       res.send({ link });
