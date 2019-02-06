@@ -11,12 +11,17 @@ router.post('/friendRequest', ({ body: { tag, from, queryProperty } }, res) => {
     if (!user || err) return res.status(401).send({ message: 'Hm, didn\'t work. Double check that the capitalization, spelling, any spaces, and numbers are correct.' });
     if (isInArray(from, user.friends)) return res.status(200).send({ message: `${user.username} is already your friend!` });
 
-    const friendRequest = new FriendRequest({ from, to: user._id });
-    friendRequest.save((error) => {
-      if (error) return res.status(400).send({ message: 'Hm, didn\'t work. We were unable to send your request, please try again later.' });
+    FriendRequest.findOne({ from, to: user._id }, (error, friendReq) => {
+      if (error) return res.status(401).send({ message: 'Hm, didn\'t work. Double check that the capitalization, spelling, any spaces, and numbers are correct.' });
+      if (friendReq) return res.status(200).send({ message: 'Your request has already been sent!' });
 
-      res.status(200).send({ friendRequest });
-    })
+      const friendRequest = new FriendRequest({ from, to: user._id });
+      friendRequest.save((error) => {
+        if (error) return res.status(400).send({ message: 'Hm, didn\'t work. We were unable to send your request, please try again later.' });
+
+        res.status(200).send({ friendRequest });
+      })
+    });
   });
 });
 
