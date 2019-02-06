@@ -5,14 +5,15 @@ import User from '../models/user';
 
 const router = Router();
 
-router.post('/friendRequest', ({ body: { tag, from } }, res) => {
-  User.findOne({ tag }, (err, user) => {
+router.post('/friendRequest', ({ body: { tag, from, queryProperty } }, res) => {
+  const property = queryProperty || 'tag';
+  User.findOne({ [property]: tag }, (err, user) => {
     if (!user || err) return res.status(401).send({ message: 'Hm, didn\'t work. Double check that the capitalization, spelling, any spaces, and numbers are correct.' });
-    if (isInArray(from, user.friends)) return res.status(200).send({ message: `${tag.split('#')[0]} is already your friend!` });
+    if (isInArray(from, user.friends)) return res.status(200).send({ message: `${user.username} is already your friend!` });
 
     const friendRequest = new FriendRequest({ from, to: user._id });
     friendRequest.save((error) => {
-      if (error) return res.status(400).send({ message: 'Hm, didn\'t work. Double check that the capitalization, spelling, any spaces, and numbers are correct.' });
+      if (error) return res.status(400).send({ message: 'Hm, didn\'t work. We were unable to send your request, please try again later.' });
 
       res.status(200).send({ friendRequest });
     })
