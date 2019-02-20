@@ -28,7 +28,10 @@ router.put('/:userId/update', ({ body: { name, value }, params: { userId } }, re
 
 router.get('/:userId/friends', ({ params: { userId } }, res) => {
   User.findOne({ _id: userId })
-    .populate('friends')
+    .populate({
+      path: 'friends',
+      options: { collation: { locale: 'en' }, sort: { username: 1 } }
+    })
     .exec((err, user) => {
       if (err) return res.status(401).send({ message: err.message });
       if (!user) return res.status(401).send({ message: `Couldn\'t find user with id: ${userId}` });
