@@ -29,7 +29,7 @@ router.post('/email', ({ body: { to, endpoint, from } }, res) => {
       to: to.join(' ')
     },
     locals: {
-      url: `http://www.feathershare.com/${endpoint}`,
+      url: `https://www.feathershare.com/${endpoint}`,
       from
     }
   })
