@@ -165,7 +165,7 @@ initializeDb( db => {
 	});
 
 	cron.schedule('0 0 0 1 * *', () => {
-		User.updateMany({ isPro: false }, { $set: { remainingFiles: 50, remainingBytes: 2147483648 } }, (err, raw) => {
+		User.updateMany({ isPro: false }, { $set: { remainingFiles: 10, remainingBytes: 2147483648 } }, (err, raw) => {
 			// TODO: Handle error
 		});
 
