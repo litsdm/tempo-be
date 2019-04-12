@@ -2,14 +2,14 @@ import { Router } from 'express';
 import Stripe from 'stripe';
 
 import User from '../models/user';
-import Plan from '../models/plan';
+// import Plan from '../models/plan';
 
 const { STRIPE_SECRET } = process.env;
 
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
 
-const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
+/* const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
   User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })
     .exec((error) => {
       if (error) reject(error)
@@ -134,6 +134,36 @@ const charge = async (req, res) => {
   }
 }
 
-router.post('/charge', charge);
+router.post('/charge', charge); */
+
+let planId = '';
+
+stripe.products.create({
+  name: 'Feather Plus',
+  type: 'service',
+}).then(product => stripe.plans.create({
+  product: product.id,
+  nickname: 'Feather Plus USD',
+  currency: 'usd',
+  interval: 'month',
+  amount: 599,
+}).then(plan => { planId = plan.id; }));
+
+router.post('/charge', ({ body: { user, checkoutData, tokenId } }, res) => {
+  stripe.customers.create({
+    email: user.email,
+    source: tokenId,
+  }).then(customer => stripe.subscriptions.create({
+    customer: customer.id,
+    items: [{plan: planId}]
+  })).then(() => {
+    User.findOneAndUpdate({ _id: user.id }, { $set: { 'isPro': true, checkoutData } })
+      .exec((err) => {
+        if (err) return res.status(500).end();
+        return res.json({ status: 200 });
+      });
+  })
+  .catch((err) => { console.error(err); res.status(500).end(); });
+});
 
 export default router;
