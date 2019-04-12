@@ -36,7 +36,7 @@ app.use(morgan('dev'));
 const whitelist = ['https://www.feathershare.com']
 app.use(cors({
 	origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
+    if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
@@ -46,12 +46,6 @@ app.use(cors({
 }));
 
 app.options('*', cors())
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 
