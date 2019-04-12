@@ -9,7 +9,7 @@ const { STRIPE_SECRET } = process.env;
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
 
-/* const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
+const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
   User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })
     .exec((error) => {
       if (error) reject(error)
@@ -17,7 +17,7 @@ const stripe = Stripe(STRIPE_SECRET);
     });
 });
 
-const createSubscriptionOnStripe = (customerId, planId) => {
+/* const createSubscriptionOnStripe = (customerId, planId) => {
   try {
     return stripe.subscriptions.create({
       customer: customerId,
