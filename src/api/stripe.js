@@ -87,8 +87,6 @@ const convertPriceToStripeAmount = (price) => {
   else if (parts.length > 1 && parts[1].length === 1) strPrice = `${parts[0]}${parts[1]}0`;
   else strPrice = `${parts[0]}${parts[1]}`;
 
-  console.log(`[charge.convertPriceToStripeAmount] ${strPrice}`);
-
   return parseInt(strPrice);
 }
 

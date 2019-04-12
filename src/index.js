@@ -34,6 +34,7 @@ app.use(morgan('dev'));
 
 // 3rd party middleware
 app.use(cors({
+	origin: '*',
 	exposedHeaders: config.corsHeaders
 }));
 
