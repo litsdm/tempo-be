@@ -35,7 +35,8 @@ app.use(morgan('dev'));
 // 3rd party middleware
 app.use(cors({
 	origin: 'https://www.feathershare.com',
-	exposedHeaders: config.corsHeaders
+	exposedHeaders: config.corsHeaders,
+	credentials: true,
 }));
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
