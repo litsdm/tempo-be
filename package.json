@@ -40,7 +40,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.13.3",
     "compression": "^1.5.2",
-    "cors": "^2.7.1",
+    "cors": "^2.8.5",
     "dotenv": "^6.0.0",
     "email-templates": "^5.0.3",
     "expo-server-sdk": "^3.0.1",
