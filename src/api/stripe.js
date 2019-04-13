@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import Stripe from 'stripe';
-import cors from 'cors';
 
 import User from '../models/user';
 import Plan from '../models/plan';
@@ -9,8 +8,6 @@ const { STRIPE_SECRET } = process.env;
 
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
-
-router.options('/charge', cors())
 
 const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
   User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })

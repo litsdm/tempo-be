@@ -1,5 +1,6 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
+import cors from 'cors';
 import auth from './auth';
 import files from './files';
 import user from './user';
@@ -10,6 +11,8 @@ import link from './link';
 
 export default () => {
 	let api = Router();
+
+	api.options('*', cors())
 
 	api.use('/', auth);
 	api.use('/', files);
