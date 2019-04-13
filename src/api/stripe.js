@@ -2,14 +2,14 @@ import { Router } from 'express';
 import Stripe from 'stripe';
 
 import User from '../models/user';
-import Plan from '../models/plan';
+// import Plan from '../models/plan';
 
 const { STRIPE_SECRET } = process.env;
 
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
 
-const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
+/* const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
   User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })
     .exec((error) => {
       if (error) reject(error)
@@ -106,14 +106,14 @@ const validateOptions = (options) => {
   } catch (exception) {
     throw new Error(`[charge.validateOptions] ${exception.message}`);
   }
-}
+} */
 
 const charge = async (options) => {
   try {
     const { user, checkoutData, tokenId, response } = options.body;
     const { donationAmount, ...remainingCheckoutData } = checkoutData
 
-    validateOptions(options);
+    /* validateOptions(options);
 
     const formattedAmount = convertPriceToStripeAmount(donationAmount);
     const product = await createProductOnStripe();
@@ -126,7 +126,7 @@ const charge = async (options) => {
 
     const customer = await createCustomerOnStripe(user.email, tokenId);
     await createSubscriptionOnStripe(customer.id, plan.id);
-    await updateUserIsPro(user.id, remainingCheckoutData);
+    await updateUserIsPro(user.id, remainingCheckoutData); */
 
     response.status(200).end();
   } catch (exception) {
