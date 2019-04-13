@@ -102,7 +102,7 @@ const validateOptions = (options) => {
     if (!options.body.checkoutData.donationAmount) throw new Error('options.body.checkoutData.donationAmount is required.');
     if (parseFloat(options.body.checkoutData.donationAmount) < 3) throw new Error('options.body.checkoutData.donationAmount needs to be higher than 3.');
     if (!options.body.tokenId) throw new Error('options.body.tokenId is required.');
-    if (!options.response) throw new Error('options.response is required.');
+    // if (!options.response) throw new Error('options.response is required.');
   } catch (exception) {
     throw new Error(`[charge.validateOptions] ${exception.message}`);
   }
@@ -127,8 +127,6 @@ const charge = async (options) => {
     const customer = await createCustomerOnStripe(user.email, tokenId);
     await createSubscriptionOnStripe(customer.id, plan.id);
     await updateUserIsPro(user.id, remainingCheckoutData);
-
-    response.end();
   } catch (exception) {
     // options.response.status(500).end();
     throw new Error(`[charge] ${exception.message}`);
@@ -136,7 +134,8 @@ const charge = async (options) => {
 }
 
 router.post('/charge', (request, response) => {
-  charge({ body: request.body, response });
+  charge({ body: request.body });
+  response.end();
 });
 
 export default router;
