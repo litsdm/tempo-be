@@ -12,6 +12,7 @@ import link from './link';
 export default () => {
 	let api = Router();
 
+	api.use(cors());
 	api.options('*', cors())
 
 	api.use('/', auth);
