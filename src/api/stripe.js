@@ -2,7 +2,7 @@ import { Router } from 'express';
 import Stripe from 'stripe';
 
 import User from '../models/user';
-// import Plan from '../models/plan';
+import Plan from '../models/plan';
 
 const { STRIPE_SECRET } = process.env;
 
@@ -17,7 +17,7 @@ const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) 
     });
 });
 
-/* const createSubscriptionOnStripe = (customerId, planId) => {
+const createSubscriptionOnStripe = (customerId, planId) => {
   try {
     return stripe.subscriptions.create({
       customer: customerId,
@@ -102,17 +102,18 @@ const validateOptions = (options) => {
     if (!options.body.checkoutData.donationAmount) throw new Error('options.body.checkoutData.donationAmount is required.');
     if (parseFloat(options.body.checkoutData.donationAmount) < 3) throw new Error('options.body.checkoutData.donationAmount needs to be higher than 3.');
     if (!options.body.tokenId) throw new Error('options.body.tokenId is required.');
+    if (!options.response) throw new Error('options.response is required.');
   } catch (exception) {
     throw new Error(`[charge.validateOptions] ${exception.message}`);
   }
 }
 
-const charge = async (req, res) => {
+const charge = async (options) => {
   try {
-    const { user, checkoutData, tokenId} = req.body;
+    const { user, checkoutData, tokenId, response } = options.body;
     const { donationAmount, ...remainingCheckoutData } = checkoutData
 
-    validateOptions(req);
+    validateOptions(options);
 
     const formattedAmount = convertPriceToStripeAmount(donationAmount);
     const product = await createProductOnStripe();
@@ -127,43 +128,15 @@ const charge = async (req, res) => {
     await createSubscriptionOnStripe(customer.id, plan.id);
     await updateUserIsPro(user.id, remainingCheckoutData);
 
-    res.status(200).end();
+    response.status(200).end();
   } catch (exception) {
-    res.status(500).end();
+    options.response.status(500).end();
     throw new Error(`[charge] ${exception.message}`);
   }
 }
 
-router.post('/charge', charge); */
-
-let planId = '';
-
-stripe.products.create({
-  name: 'Feather Plus',
-  type: 'service',
-}).then(product => stripe.plans.create({
-  product: product.id,
-  nickname: 'Feather Plus USD',
-  currency: 'usd',
-  interval: 'month',
-  amount: 599,
-}).then(plan => { planId = plan.id; }));
-
-router.post('/charge', ({ body: { user, checkoutData, tokenId } }, res) => {
-  stripe.customers.create({
-    email: user.email,
-    source: tokenId,
-  }).then(customer => stripe.subscriptions.create({
-    customer: customer.id,
-    items: [{plan: planId}]
-  })).then(() => {
-    User.findOneAndUpdate({ _id: user.id }, { $set: { 'isPro': true, checkoutData } })
-      .exec((err) => {
-        if (err) return res.status(500).end();
-        return res.json({ status: 200 });
-      });
-  })
-  .catch((err) => { console.error(err); res.status(500).end(); });
+router.post('/charge', (request, response) => {
+  charge({ body: request.body, response });
 });
 
 export default router;
