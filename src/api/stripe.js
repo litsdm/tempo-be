@@ -10,6 +10,8 @@ const { STRIPE_SECRET } = process.env;
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
 
+router.options('/charge', cors())
+
 const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
   User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })
     .exec((error) => {
@@ -135,7 +137,5 @@ const charge = async (req, res) => {
 }
 
 router.post('/charge', charge);
-
-router.options('/charge', cors())
 
 export default router;
