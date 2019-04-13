@@ -37,7 +37,7 @@ app.use(morgan('dev'));
 	exposedHeaders: config.corsHeaders,
 })); */
 
-app.options('/api/charge', cors({
+app.options('*', cors({
 	exposedHeaders: config.corsHeaders,
 }))
 
