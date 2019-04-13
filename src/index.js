@@ -33,9 +33,13 @@ app.server = http.createServer(app);
 app.use(morgan('dev'));
 
 // 3rd party middleware
-app.use(cors({
+/* app.use(cors({
 	exposedHeaders: config.corsHeaders,
-}));
+})); */
+
+app.options('/api/charge', cors({
+	exposedHeaders: config.corsHeaders,
+}))
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 
