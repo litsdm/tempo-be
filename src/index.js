@@ -33,9 +33,7 @@ app.server = http.createServer(app);
 app.use(morgan('dev'));
 
 // 3rd party middleware
-app.use(cors({
-	exposedHeaders: config.corsHeaders,
-}));
+app.use(cors());
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 
@@ -196,6 +194,7 @@ initializeDb( db => {
 	app.use(middleware({ config, db }));
 
 	// api router
+	app.options('*', cors());
 	app.use('/api', api({ config, db }));
 	app.get('/api/sign-s3', signS3);
 	app.post('/api/delete-s3', deleteS3);
