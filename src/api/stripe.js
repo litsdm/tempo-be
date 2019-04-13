@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Stripe from 'stripe';
+import cors from 'cors';
 
 import User from '../models/user';
 import Plan from '../models/plan';
@@ -134,5 +135,7 @@ const charge = async (req, res) => {
 }
 
 router.post('/charge', charge);
+
+router.options('/charge', cors())
 
 export default router;
