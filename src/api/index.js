@@ -1,6 +1,5 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
-import cors from 'cors';
 import auth from './auth';
 import files from './files';
 import user from './user';
