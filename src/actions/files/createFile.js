@@ -14,8 +14,6 @@ const validateOptions = (options) => {
     if (!options.body) throw new Error('options.body is required.');
     if (!options.body.name) throw new Error('options.body.name is required.');
     if (!options.body.size) throw new Error('options.body.size is required.');
-    if (!options.body.from) throw new Error('options.body.from is required.');
-    if (!options.body.to) throw new Error('options.body.to is required.');
     if (!options.response) throw new Error('options.response is required.');
   } catch (exception) {
     throw new Error(`[createFile.validateOptions] ${exception.message}`);

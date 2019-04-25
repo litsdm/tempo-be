@@ -1,32 +1,13 @@
 import { Router } from 'express';
 
-import Link from '../models/link';
+import createLink from '../actions/link/createLink';
+import getLink from '../actions/link/getLink';
+import deleteLink from '../actions/link/deleteLink';
 
 const router = Router();
 
-router.post('/links', ({ body }, res) => {
-  const link = new Link(body);
-  link.save((err) => {
-    if (err) return res.status(401).send({ message: err.message });
-    res.status(200).send({ link });
-  });
-});
-
-router.get('/links/:linkId', ({ params: { linkId } }, res) => {
-  Link
-    .findOne({ _id: linkId })
-    .populate('files', 'name type size s3Url')
-    .exec((err, link) => {
-      if (err) return res.status(401).send({ message: 'An error ocurred.' });
-      res.send({ link });
-    });
-});
-
-router.delete('/links/linkId', ({ params: { linkId } }, res) => {
-  Link.findOneAndDelete({ _id: linkId }, (error) => {
-    if (error) return res.status(400).send({ message: error.message });
-    res.sendStatus(200);
-  });
-});
+router.post('/links', createLink);
+router.get('/links/:linkId', getLink);
+router.delete('/links/linkId', deleteLink);
 
 export default router;
