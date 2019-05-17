@@ -21,8 +21,6 @@ import config from './config.json';
 import User from './models/user';
 import Files from './models/file';
 
-// TODO: modify node to restart by itself on a crash
-
 const { S3_BUCKET } = process.env;
 
 let app = express();
