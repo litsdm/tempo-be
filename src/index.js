@@ -44,18 +44,24 @@ app.use(bodyParser.json({limit: '50mb', extended: true}));
 // connect to db
 initializeDb( db => {
 	const signS3 = (req, res) => {
-		const s3 = new aws.S3();
+		const options = {
+			signatureVersion: 'v4',
+			region: 'us-west-2',
+			endpoint: new aws.Endpoint('feather-share.s3-accelerate.amazonaws.com'),
+			useAccelerateEndpoint: true
+		};
+		const s3 = new aws.S3(options);
 		const fileName = req.query['file-name'];
 		const fileType = req.query['file-type'];
 		const folderName = req.query['folder-name'];
 		const randomIndex = Math.floor(Math.random() * (4 - 0 + 1));
-		const uniqueFilename = `${uuid().split('-')[randomIndex]}-${fileName}`
+		const uniqueFilename = `${uuid().split('-')[randomIndex]}-${fileName}`;
 		const s3Params = {
 			Bucket: S3_BUCKET,
 			Key: `${folderName}/${uniqueFilename}`,
-			Expires: 60,
+			Expires: 180,
 			ContentType: fileType,
-			ACL: 'public-read'
+			// ACL: 'public-read'
 		};
 
 		s3.getSignedUrl('putObject', s3Params, (err, data) => {

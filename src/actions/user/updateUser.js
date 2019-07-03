@@ -29,7 +29,7 @@ const validateOptions = (options) => {
     if (!options.body) throw new Error('options.body is required.');
     if (!options.params) throw new Error('options.params is required.');
     if (!options.body.name) throw new Error('options.body.name is required.');
-    if (!options.body.value) throw new Error('options.body.value is required.');
+    if (!options.body.value && options.body.value !== 0) throw new Error('options.body.value is required.');
     if (!options.params.userId) throw new Error('options.params.userId is required.');
     if (!options.response) throw new Error('options.response is required.');
   } catch (exception) {
