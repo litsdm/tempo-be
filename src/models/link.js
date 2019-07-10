@@ -7,6 +7,7 @@ var LinkSchema = new Schema({
   expiresAt: { type: Date },
   updatedAt: { type: Date },
   s3Url: { type: String },
+  s3Filename: { type: String },
   type: { type: String, default: 'compress' },
   size: { type: Number, required: true },
   files: [{ type: ObjectId, ref: 'File' }],

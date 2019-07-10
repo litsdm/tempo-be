@@ -1,21 +1,42 @@
 import File from '../../models/file';
 
-const deleteFileFromDB = (fileId) => new Promise((resolve, reject) => {
-  File.findOneAndDelete({ _id: fileId }, (error) => {
+const deleteFileFromDB = (fileID) => new Promise((resolve, reject) => {
+  File.findOneAndDelete({ _id: fileID }, (error) => {
     if (error) reject(error);
     resolve();
   });
 });
 
-const updateFileRecipients = (userId, fileId) => new Promise((resolve, reject) => {
-  File.findOneAndUpdate(
-    { $and: [ { to: userId, _id: fileId } ] },
-    { $pull: { to: userId } },
-    (error, fileBeforeUpdate) => {
-      if (error) reject(error);
-      resolve(fileBeforeUpdate.to.length - 1);
+const saveFile = file => new Promise((resolve, reject) => {
+  file.save(error => {
+    if (error) reject(error);
+    resolve()
   });
 });
+
+const findFile = fileID => new Promise((resolve, reject) => {
+  File
+    .findOne({ _id: fileID })
+    .exec((error, file) => {
+    if (error) reject(error);
+    resolve(file)
+  });
+});
+
+const updateFileRecipients = async (userID, fileID) => {
+  try {
+    const file = await findFile(fileID);
+
+    const index = file.to.indexOf(userID);
+    if (index > -1) file.to.splice(index, 1);
+
+    await saveFile(file);
+
+    return file.to.length;
+  } catch (exception) {
+    throw new Error(`[deleteFile.updateFileRecipients] ${exception.message}`);
+  }
+};
 
 const validateOptions = (options) => {
   try {
@@ -37,7 +58,6 @@ const deleteFile = async ({ params }, response) => {
     validateOptions({ params, response });
 
     const recipientCount = await updateFileRecipients(userId, fileId);
-
     if (recipientCount === 0) {
       shouldDeleteS3 = true;
       await deleteFileFromDB(fileId);

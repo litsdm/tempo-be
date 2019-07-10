@@ -2,7 +2,6 @@ import "babel-core/register";
 import "babel-polyfill";
 import http, { Server } from 'http';
 import express from 'express';
-import fs from 'fs';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -11,8 +10,6 @@ import socketIo from 'socket.io';
 import moment from 'moment';
 import cron from 'node-cron';
 import Expo from 'expo-server-sdk';
-import uuid from 'uuid/v4';
-import archiver from 'archiver';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
@@ -43,103 +40,6 @@ app.use(bodyParser.json({limit: '50mb', extended: true}));
 
 // connect to db
 initializeDb( db => {
-	const signS3 = (req, res) => {
-		const options = {
-			signatureVersion: 'v4',
-			region: 'us-west-2',
-			endpoint: new aws.Endpoint('feather-share.s3-accelerate.amazonaws.com'),
-			useAccelerateEndpoint: true
-		};
-		const s3 = new aws.S3(options);
-		const fileName = req.query['file-name'];
-		const fileType = req.query['file-type'];
-		const folderName = req.query['folder-name'];
-		const randomIndex = Math.floor(Math.random() * (4 - 0 + 1));
-		const uniqueFilename = `${uuid().split('-')[randomIndex]}-${fileName}`;
-		const s3Params = {
-			Bucket: S3_BUCKET,
-			Key: `${folderName}/${uniqueFilename}`,
-			Expires: 180,
-			ContentType: fileType,
-			// ACL: 'public-read'
-		};
-
-		s3.getSignedUrl('putObject', s3Params, (err, data) => {
-			if (err) { console.log(err); return res.end(); }
-
-			const returnData = {
-				signedRequest: data,
-				url: `https://${S3_BUCKET}.s3.amazonaws.com/${folderName}/${uniqueFilename}`
-			};
-			res.write(JSON.stringify(returnData));
-			res.end();
-		});
-	};
-
-	const deleteS3 = (req, res) => {
-		const s3 = new aws.S3();
-		const { filename } = req.body;
-		const s3Params = {
-			Bucket: S3_BUCKET,
-			Key: `Files/${filename}`
-		};
-
-		s3.deleteObject(s3Params, (err) => {
-			if (err) console.log(err);
-
-			res.end();
-		});
-	};
-
-	const compressAndUpload = ({ body: { files } }, res) => {
-		// create a zip file output path
-		const outputPath = __dirname + '/FeatherFiles.zip'
-		const output = fs.createWriteStream(outputPath);
-
-		// create archive
-		const archive = archiver('zip');
-
-		// pipe archive data to output
-		archive.pipe(output);
-
-		// change files from json string to ArrayBuffer to Buffer.
-		const bufferFiles = files.map(({ name, data }) => ({
-			name,
-			buffer: Buffer.from(data, 'base64')
-		}));
-
-		// Append files to zip archive
-		bufferFiles.forEach(({ buffer, name }) => archive.append(buffer, { name }))
-
-		// Listen for onClose event
-		output.on('close', () => {
-			// Upload archive to s3
-			const zipFile = fs.readFileSync(`${__dirname}/FeatherFiles.zip`);
-			const s3 = new aws.S3();
-			const randomIndex = Math.floor(Math.random() * (4 - 0 + 1));
-			const uniqueFilename = `${uuid().split('-')[randomIndex]}-FeatherFiles.zip`;
-			const params = {
-				Bucket: S3_BUCKET,
-				Key: `Files/${uniqueFilename}`,
-				ContentType: 'application/zip',
-				ACL: 'public-read',
-				Body: Buffer.from(zipFile)
-			}
-			s3.putObject(params, (err) => {
-				fs.unlinkSync(outputPath);
-				if (err) return res.status(400).send({ err }).end();
-				const returnData = {
-					size: archive.pointer(),
-					url: `https://${S3_BUCKET}.s3.amazonaws.com/Files/${uniqueFilename}`
-				};
-				res.status(200).send(returnData);
-				res.end();
-			})
-		});
-
-		archive.finalize();
-	};
-
 	const logUserConnection = (userId) => {
 		User.findByIdAndUpdate(userId, { $set: { lastConnection: new Date() } }, (err) => { if (err) console.log(err); });
 	}
@@ -205,9 +105,6 @@ initializeDb( db => {
 
 	// api router
 	app.use('/api', api({ config, db }));
-	app.get('/api/sign-s3', signS3);
-	app.post('/api/delete-s3', deleteS3);
-	app.post('/api/compressAndUpload', compressAndUpload);
 
 	httpServer.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${httpServer.address().port}`);

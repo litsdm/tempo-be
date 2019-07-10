@@ -8,6 +8,7 @@ var FileSchema = new Schema({
   updatedAt: { type: Date },
   name: { type: String, required: true },
   s3Url: { type: String },
+  s3Filename: { type: String },
   size: { type: Number, required: true },
   from: { type:  ObjectId, ref: 'User' },
   to: [{ type: ObjectId, ref: 'User' }],
