@@ -5,9 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import aws from 'aws-sdk';
 import socketIo from 'socket.io';
-import moment from 'moment';
 import cron from 'node-cron';
 import Expo from 'expo-server-sdk';
 import initializeDb from './db';
@@ -16,9 +14,9 @@ import api from './api';
 import config from './config.json';
 
 import User from './models/user';
-import Files from './models/file';
 
-const { S3_BUCKET } = process.env;
+import deleteExpiredFiles from './actions/cron/deleteExpiredFiles';
+import updateRestrictions from './actions/cron/updateRestrictions';
 
 let app = express();
 const httpServer = Server(app);
@@ -44,43 +42,8 @@ initializeDb( db => {
 		User.findByIdAndUpdate(userId, { $set: { lastConnection: new Date() } }, (err) => { if (err) console.log(err); });
 	}
 
-	cron.schedule('0 0 0 */3 * *', () => {
-		User
-		.find()
-		.select('_id lastConnection files')
-		.populate('files')
-		.exec((err, users) => {
-			const s3 = new aws.S3();
-			users.forEach(({ _id: userId, lastConnection, files }) => {
-				const past = moment(lastConnection);
-				if (moment().diff(past, 'days') >= 3) {
-					// Delete files
-					User.findByIdAndUpdate(userId, { $set: { files: [] } }, (err) => { if (err) console.log(err); });
-					files.forEach(({ _id, name }) => {
-						Files.findByIdAndRemove(_id, (err) => { if (err) console.log(err); });
-						const s3Params = {
-							Bucket: S3_BUCKET,
-							Key: `Files/${name}`
-						};
-
-						s3.deleteObject(s3Params, (err) => {
-							if (err) console.log(err);
-						});
-					});
-				}
-			});
-		});
-	});
-
-	cron.schedule('0 0 0 1 * *', () => {
-		User.updateMany({ isPro: false }, { $set: { remainingFiles: 10, remainingBytes: 2147483648 } }, (err, raw) => {
-			// TODO: Handle error
-		});
-
-		User.updateMany({ isPro: true }, { $set: { remainingFiles: 10000, remainingBytes: 53687091200 } }, (err, raw) => {
-			// TODO: Handle error
-		})
-	});
+	cron.schedule('0 0 0 */3 * *', deleteExpiredFiles);
+	cron.schedule('0 0 0 1 * *', updateRestrictions);
 
 	const sendFileReceivedPushNotification = (userId, filename) => {
 		let messages = [];
