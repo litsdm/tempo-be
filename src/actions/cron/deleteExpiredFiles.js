@@ -2,11 +2,19 @@ import aws from 'aws-sdk';
 import moment from 'moment';
 
 import File from '../../models/file';
+import Link from '../../models/link';
 
 const { S3_BUCKET } = process.env;
 
-const deleteDBFile = _id => new Promise((resolve, reject) => {
-  File.deleteOne({ _id }, error => {
+const findExpiredLinks = () => new Promise((resolve, reject) => {
+  Link.find({ expiresAt: { '$lt': new Date() } }, (error, links) => {
+    if (error) reject(error);
+    resolve(links);
+  })
+});
+
+const deleteFromDB = (_id, model) => new Promise((resolve, reject) => {
+  model.deleteOne({ _id }, error => {
     if (error) reject(error);
     resolve();
   })
@@ -19,20 +27,19 @@ const deleteObject = (s3, s3Params) => new Promise((resolve, reject) => {
   });
 });
 
-const deleteFiles = async files => {
+const deleteDocuments = async (docs, s3, model) => {
   try {
-    const s3 = new aws.S3();
     const s3Promises = [];
     const dbPromises = [];
 
-    files.forEach(({ _id, s3Filename }) => {
+    docs.forEach(({ _id, s3Filename }) => {
       const s3Params = {
         Bucket: S3_BUCKET,
         Key: `Files/${s3Filename}`
       }
 
       s3Promises.push(deleteObject(s3, s3Params));
-      dbPromises.push(deleteDBFile(_id));
+      dbPromises.push(deleteFromDB(_id, model));
     });
 
     await Promise.all(s3Promises);
@@ -52,8 +59,13 @@ const findExpiredFiles = () => new Promise((resolve, reject) => {
 
 const deleteExpiredFiles = async () => {
   try {
+    const s3 = new aws.S3();
+
     const files = await findExpiredFiles();
-    await deleteFiles(files);
+    await deleteDocuments(files, s3, File);
+
+    const links = await findExpiredLinks();
+    await deleteDocuments(links, s3, Link);
   } catch (exception) {
     throw new Error(`[deleteExpiredFiles] ${exception.message}`);
   }

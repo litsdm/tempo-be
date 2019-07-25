@@ -19,8 +19,8 @@ LinkSchema.pre('save', function(next) {
   const now = new Date();
   this.updatedAt = now;
   if (!this.createdAt) {
-    this.expiresAt = now.setDate(now.getDate() + 1);
     this.createdAt = now;
+    this.expiresAt = now.setDate(now.getDate() + 1);
   }
   next();
 });

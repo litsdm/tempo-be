@@ -8,6 +8,6 @@ const router = Router();
 
 router.post('/links', createLink);
 router.get('/links/:linkId', getLink);
-router.delete('/links/linkId', deleteLink);
+router.delete('/links/:linkId', deleteLink);
 
 export default router;
