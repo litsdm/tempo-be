@@ -38,6 +38,10 @@ const connection = socket => {
     socket.to(roomId).emit('updateUser', token);
   });
 
+  socket.on('addLink', ({ roomId, link }) => {
+    socket.to(roomId).emit('newLink', link);
+  });
+
   socket.on('logout', () => {
     socket.disconnect();
   });
