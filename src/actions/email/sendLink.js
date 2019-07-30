@@ -6,6 +6,28 @@ import { google } from 'googleapis';
 const { OAuth2 } = google.auth;
 const { GMAIL_CLIENT_ID, GMAIL_SECRET, REFRESH_TOKEN, EMAIL_USER } = process.env;
 
+export const generateTransport = async () => {
+  try {
+    const client = new OAuth2(GMAIL_CLIENT_ID, GMAIL_SECRET, 'https://developers.google.com/oauthplayground');
+    client.setCredentials({ refresh_token: REFRESH_TOKEN });
+    const accessToken = await client.getAccessToken();
+
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: EMAIL_USER,
+        clientId: GMAIL_CLIENT_ID,
+        clientSecret: GMAIL_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken
+      }
+    });
+  } catch(exception) {
+    throw new Error(`[EmailActions.generateTransport] ${exception.message}`);
+  }
+}
+
 const validateOptions = options => {
   try {
     if (!options) throw new Error('options object is required.');
@@ -23,21 +45,7 @@ const sendLink = async ({ body }, response) => {
     const { to, endpoint, from } = body;
     validateOptions({ body, response });
 
-    const client = new OAuth2(GMAIL_CLIENT_ID, GMAIL_SECRET, 'https://developers.google.com/oauthplayground');
-    client.setCredentials({ refresh_token: REFRESH_TOKEN });
-    const accessToken = await client.getAccessToken();
-
-    const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: EMAIL_USER,
-        clientId: GMAIL_CLIENT_ID,
-        clientSecret: GMAIL_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken
-      }
-    });
+    const transport = await generateTransport();
 
     const mailOptions = {
       template: path.join(__dirname, '../../emails/link'),
