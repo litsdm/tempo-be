@@ -42,6 +42,10 @@ const connection = socket => {
     socket.to(roomId).emit('newLink', link);
   });
 
+  socket.on('removeLinkFromRoom', ({ roomId, index }) => {
+    socket.broadcast.to(roomId).emit('removeLink', index);
+  })
+
   socket.on('logout', () => {
     socket.disconnect();
   });
