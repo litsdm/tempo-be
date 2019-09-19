@@ -12,7 +12,6 @@ const validateOptions = (options) => {
   try {
     if (!options) throw new Error('options object is required.');
     if (!options.body) throw new Error('options.body is required.');
-    if (!options.body.type) throw new Error('options.body.type is required.');
     if (!options.body.size) throw new Error('options.body.size is required.');
     if (!options.response) throw new Error('options.response is required.');
   } catch (exception) {

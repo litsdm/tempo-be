@@ -1,7 +1,7 @@
 import File from '../../models/file';
 
 const fetchFiles = fileIDs => new Promise((resolve, reject) => {
-  File.find({ _id: { $in: fileIDs } }, 'name type', (error, files) => {
+  File.find({ _id: { $in: fileIDs } }, 'name type s3Filename', (error, files) => {
     if (error) reject(error);
     resolve(files);
   });

@@ -1,6 +1,6 @@
 import File from '../../models/file';
 
-const deleteFilesFromDB = (files) => new Promise((resolve, reject) => {
+const deleteFilesFromDB = files => new Promise((resolve, reject) => {
   File.deleteMany({ _id: { $in: files } }, error => {
     if (error) reject(error);
     resolve();

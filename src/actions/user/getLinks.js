@@ -3,7 +3,7 @@ import Link from '../../models/link';
 const findLinks = userID => new Promise((resolve, reject) => {
   Link
     .find({ from: userID }, {}, { sort: { createdAt: -1 } })
-    .populate('files', 'name type')
+    .populate('files', 'name type s3Filename')
     .exec((error, links) => {
       if (error) reject(error);
       resolve(links);
