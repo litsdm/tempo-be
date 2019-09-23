@@ -20,7 +20,7 @@ var UserSchema = new Schema({
   expoToken: { type: String },
   isPro: { type: Boolean, default: false },
   remainingBytes: { type: Number, default: 2147483648 },
-  remainingFiles: { type: Number, default: 10 },
+  remainingFiles: { type: Number, default: 3 },
   role: { type: String, default: 'user' }
 });
 

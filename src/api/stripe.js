@@ -51,8 +51,8 @@ const createPlanOnStripe = (productId, amount) => {
   try {
     return stripe.plans.create({
       product: productId,
-      nickname: `Feather Plus ${amount} USD`,
-      currency: 'usd',
+      nickname: `Feather Plus ${amount} MXN`,
+      currency: 'mxn',
       interval: 'month',
       amount: amount,
     })
@@ -107,12 +107,12 @@ const validateOptions = (options) => {
   }
 }
 
-const charge = async (req, res) => {
+const charge = async ({ body }, res) => {
   try {
-    const { user, checkoutData, tokenId } = req.body;
+    const { user, checkoutData, tokenId } = body;
     const { donationAmount, ...remainingCheckoutData } = checkoutData
 
-    validateOptions(req.body);
+    validateOptions({ body });
 
     const formattedAmount = convertPriceToStripeAmount(donationAmount);
     const product = await createProductOnStripe();

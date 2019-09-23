@@ -31,8 +31,8 @@ app.use(cors({
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 
 initializeDb( db => {
-	cron.schedule('0 0 0 */3 * *', deleteExpiredFiles);
-	cron.schedule('0 0 0 1 * *', updateRestrictions);
+	cron.schedule('0 0 */3 * *', deleteExpiredFiles);
+	cron.schedule('0 0 */1 * *', updateRestrictions);
 
 	app.use(middleware({ config, db }));
 
