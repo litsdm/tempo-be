@@ -26,7 +26,8 @@ const signGet = async ({ query }, response) => {
 		const s3Params = {
 			Bucket: S3_BUCKET,
 			Key: `Files/${filename}`,
-      Expires: 60
+      Expires: 60,
+      ResponseContentDisposition: `attachment; filename=${filename}`
 		};
 
     validateOptions({ query, response });
