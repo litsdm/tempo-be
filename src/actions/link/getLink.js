@@ -3,7 +3,7 @@ import Link from '../../models/link';
 const findLink = (linkId) => new Promise((resolve, reject) => {
   Link
     .findOne({ _id: linkId })
-    .populate('files', 'name type size s3Url')
+    .populate('files', 'name type size s3Filename')
     .exec((error, link) => {
       if (error) reject(error);
       resolve(link);
