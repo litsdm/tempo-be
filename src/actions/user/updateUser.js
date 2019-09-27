@@ -40,18 +40,17 @@ const updateUser = async ({ body, params }, response) => {
     const { userId } = params;
     validateOptions({ body, params, response });
 
-    const user = await findUser(userId);
+    let user = await findUser(userId);
 
-    if (body['remainingFiles'] >= 10 && !user.isPro) body['remainingFiles'] = 9;
+    if (body['remainingFiles'] >= 3 && !user.isPro) body['remainingFiles'] = 3;
 
     for (const key of Object.keys(body)) {
-      if (user[key]) {
+      if (user[key] !== undefined) {
         user[key] = body[key];
       }
     }
 
     await saveUser(user);
-
     const token = generateToken(user);
 
     response.status(200).send({ token });
