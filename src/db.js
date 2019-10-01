@@ -10,7 +10,7 @@ const MONGO_URL = process.env.OFFLINE
   : `mongodb://${process.env.DB_USER}:${process.env.DB_PWD}@${dbName}`;
 
 export default callback => {
-	mongoose.connect(MONGO_URL, { useNewUrlParser: true });
+	mongoose.connect(MONGO_URL, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true });
   const db = mongoose.connection;
   db.once('open', () => callback(db));
 }

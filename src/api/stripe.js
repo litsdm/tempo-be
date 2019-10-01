@@ -4,18 +4,36 @@ import Stripe from 'stripe';
 import User from '../models/user';
 import Plan from '../models/plan';
 
+import { generateToken } from '../actions/user/updateUser';
+
 const { STRIPE_SECRET } = process.env;
 
 const router = Router();
 const stripe = Stripe(STRIPE_SECRET);
 
-const updateUserIsPro = (userId, checkoutData) => new Promise((resolve, reject) => {
-  User.findOneAndUpdate({ _id: userId }, { $set: { 'isPro': true, checkoutData } })
-    .exec((error) => {
-      if (error) reject(error)
-      resolve()
-    });
+const findUser = userID => new Promise((resolve, reject) => {
+  User.findOne({ _id: userID }, (error, user) => {
+    if (error) reject(error);
+    resolve(user);
+  });
 });
+
+const updateUserIsPro = async (userId, checkoutData) => {
+  const user = await findUser(userId);
+
+  user.isPro = true;
+  user.checkoutData = checkoutData;
+
+  const token = generateToken(user);
+
+  return new Promise((resolve, reject) => {
+    user.save(error => {
+      if (error) reject(error);
+      resolve(token);
+    })
+  });
+}
+
 
 const createSubscriptionOnStripe = (customerId, planId) => {
   try {
@@ -125,8 +143,8 @@ const charge = async ({ body }, res) => {
 
     const customer = await createCustomerOnStripe(user.email, tokenId);
     await createSubscriptionOnStripe(customer.id, plan.id);
-    await updateUserIsPro(user.id, remainingCheckoutData);
-    res.status(200).end();
+    const token = await updateUserIsPro(user.id, remainingCheckoutData);
+    res.status(200).send({ token });
   } catch (exception) {
     res.status(500).end();
     throw new Error(`[charge] ${exception.message}`);
