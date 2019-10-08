@@ -9,11 +9,12 @@ import socketIo from 'socket.io';
 import cron from 'node-cron';
 import initializeDb from './db';
 import middleware from './middleware';
-import api from './api';
 import config from './config.json';
 
-import deleteExpiredFiles from './actions/cron/deleteExpiredFiles';
-import updateRestrictions from './actions/cron/updateRestrictions';
+import apiV1 from './api/v1';
+
+import deleteExpiredFiles from './api/v1/actions/cron/deleteExpiredFiles';
+import updateRestrictions from './api/v1/actions/cron/updateRestrictions';
 import onConnection from './sockets';
 
 let app = express();
@@ -36,7 +37,7 @@ initializeDb( db => {
 
 	app.use(middleware({ config, db }));
 
-	app.use('/api', api({ config, db }));
+	app.use('/api', apiV1({ config, db }));
 
 	io.on('connection', onConnection);
 
