@@ -1,7 +1,9 @@
 import File from '../../../../models/file';
 
 const findFilesFromUser = (userId) => new Promise((resolve, reject) => {
-  File.find({ to: userId }, {}, { sort: { createdAt: -1 } }, (error, files) => {
+  File.find({ to: userId }, {}, { sort: { createdAt: -1 } })
+  .populate('from', '_id username')
+  .exec((error, files) => {
     if (error) reject(error);
     resolve(files);
   });
