@@ -44,7 +44,15 @@ const connection = socket => {
 
   socket.on('removeLinkFromRoom', ({ roomId, index }) => {
     socket.broadcast.to(roomId).emit('removeLink', index);
-  })
+  });
+
+  socket.on('addSentFile', ({ roomId, file }) => {
+    socket.broadcast.to(roomId).emit('receiveSentFile', file);
+  });
+
+  socket.on('removeSentFileFromRoom', ({ roomId, id }) => {
+    socket.broadcast.to(roomId).emit('removeSentFile', id);
+  });
 
   socket.on('logout', () => {
     socket.disconnect();
