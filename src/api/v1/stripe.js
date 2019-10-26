@@ -114,9 +114,6 @@ const validateOptions = (options) => {
     if (!options.body) throw new Error('options.body is required.');
     if (!options.body.user) throw new Error('options.body.user is required.');
     if (!options.body.checkoutData) throw new Error('options.body.checkoutData is required.');
-    if (!options.body.checkoutData.fullName) throw new Error('options.body.checkoutData.fullName is required.');
-    if (!options.body.checkoutData.zipCode) throw new Error('options.body.checkoutData.zipCode is required.');
-    if (!options.body.checkoutData.country) throw new Error('options.body.checkoutData.country is required.');
     if (!options.body.checkoutData.donationAmount) throw new Error('options.body.checkoutData.donationAmount is required.');
     if (parseFloat(options.body.checkoutData.donationAmount) < 3) throw new Error('options.body.checkoutData.donationAmount needs to be higher than 3.');
     if (!options.body.tokenId) throw new Error('options.body.tokenId is required.');
