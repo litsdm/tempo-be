@@ -22,7 +22,8 @@ var UserSchema = new Schema({
   remainingBytes: { type: Number, default: 2147483648 },
   remainingFiles: { type: Number, default: 3 },
   remainingTransfers: { type: Number, default: 3 },
-  role: { type: String, default: 'user' }
+  role: { type: String, default: 'user' },
+  recentlySent: [String]
 });
 
 UserSchema.pre('save', function(next) {
