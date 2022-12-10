@@ -44,7 +44,7 @@
     "dotenv": "^6.0.0",
     "email-templates": "^5.0.3",
     "expo-server-sdk": "^3.0.1",
-    "express": "^4.13.3",
+    "express": "^4.17.3",
     "googleapis": "^41.0.0",
     "jsonwebtoken": "^8.3.0",
     "moment": "^2.22.2",
